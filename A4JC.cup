@@ -1,0 +1,100 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+terminal NUMBER;
+terminal VOID, INT, RETURN,MAIN,FOR,PLUS,SWITCH,MINUS,MULTI,IF,ELSE,GOPR,LOPR,GEOPR,LEOPR,EEOPR,NEOPR,SEMI,COMMA,LPAR, RPAR, LBRA, RBRA, EQUAL, PRINTF, HASH, ID, QUOTES, COMMENTS, INLINECOMMENTS;
+
+non terminal Integer program;
+non terminal type, methodDecl, formalParams, formalParam, block, statement, localVarDecl, assignStmt, returnStmt, expression, multiplicativeExpr, primaryExpr, actualParams, printStmt,iteration_statement,selection_statement;
+
+precedence nonassoc  MULTI,PLUS, MINUS, INT, RETURN, ID,LBRA, VOID, PRINTF,ELSE, IF,FOR; 
+
+program ::=methodDecl program:e {: RESULT =e+1; :}
+        |methodDecl {: RESULT = 1; :}
+        ;
+
+type ::=INT|VOID;
+
+methodDecl ::= type MAIN LPAR RPAR block
+        |type MAIN LPAR formalParams RPAR block
+        |type MAIN ID LPAR RPAR block
+        |type ID LPAR RPAR block
+        |type MAIN ID LPAR formalParams RPAR block
+        |type ID LPAR formalParams RPAR block
+	    ;
+
+formalParams ::=formalParam COMMA formalParams
+        |formalParam
+        ;
+
+formalParam ::= type ID
+        |type
+        ;
+
+block ::= LBRA statement RBRA
+       ;
+
+statement ::=statement statement
+        |block
+        |localVarDecl
+        |assignStmt
+        |returnStmt
+        |printStmt
+        |selection_statement
+        |iteration_statement
+        ;
+
+localVarDecl ::= type ID SEMI
+        |type ID COMMA localVarDecl
+        |type assignStmt
+        |ID SEMI
+        |ID COMMA localVarDecl
+        ;
+
+assignStmt ::= ID EQUAL expression SEMI
+        |ID EQUAL expression COMMA assignStmt
+        ;
+
+returnStmt ::= RETURN expression SEMI
+        ;
+
+printStmt ::= PRINTF LPAR QUOTES COMMA ID RPAR SEMI
+        ;
+
+expression ::= multiplicativeExpr
+        |multiplicativeExpr MULTI expression
+        |multiplicativeExpr PLUS expression
+        |multiplicativeExpr MINUS expression
+        |multiplicativeExpr GOPR expression
+        |multiplicativeExpr LOPR expression
+        |multiplicativeExpr GEOPR expression
+        |multiplicativeExpr LEOPR expression
+        |multiplicativeExpr EEOPR expression
+        |multiplicativeExpr NEOPR expression
+        ;
+
+multiplicativeExpr ::= primaryExpr
+        ;
+
+primaryExpr ::= ID LPAR actualParams RPAR
+        |LPAR expression RPAR
+        |ID LPAR RPAR
+        |QUOTES
+        |NUMBER
+        |ID
+        |ID PLUS PLUS
+        ;
+
+actualParams ::=expression COMMA actualParams
+        |expression
+        ;
+
+selection_statement::= IF LPAR expression RPAR statement
+        |IF LPAR expression RPAR statement ELSE statement
+	;
+
+iteration_statement::= FOR LPAR expression SEMI expression SEMI expression RPAR statement
+        |FOR LPAR expression SEMI expression RPAR statement
+	;
+
+
